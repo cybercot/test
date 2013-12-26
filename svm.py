@@ -1,15 +1,20 @@
-import numpy as np
-import pylab as pl
-import matplotlib.font_manager
 from sklearn import svm
 
-def svm_data(ref,alt):
-    clf = svm.OneClassSVM(nu=0.01, kernel="rbf", gamma=0)
-    clf.fit(ref)
-    y_pred_ref = clf.predict(ref)
-    y_pred_alt = clf.predict(alt)
-    n_error_ref = y_pred_ref[y_pred_ref == -1].size
-    n_error_alt = y_pred_alt[y_pred_alt == -1].size
-    print n_error_ref
-    print n_error_alt
-    return (y_pred_ref,y_pred_alt)
+def svm_data(X_train,X_test):
+    for kernel_type in ['rbf']:
+        print(kernel_type)
+        clf = svm.OneClassSVM(nu=0.01, kernel='rbf', gamma=0.1)
+        print('learning the model...')
+        clf.fit(X_train)
+        print('done')
+        print('Predict class in train')
+        y_pred_X_train = clf.predict(X_train)
+        print('Done')
+        print('Predict class in test')
+        y_pred_X_test = clf.predict(X_test)
+        print('Done')
+        n_error_X_train = float(y_pred_X_train[y_pred_X_train == -1].size)/y_pred_X_train.size*100
+        n_error_X_test = float(y_pred_X_test[y_pred_X_test == -1].size)/y_pred_X_test.size*100
+        print n_error_X_train
+        print n_error_X_test
+    return (y_pred_X_train,y_pred_X_test)
