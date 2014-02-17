@@ -1,0 +1,4 @@
+plot(ref,ylim=c(0,20),xlim=c(0,20),col=c("green"),xlab="Number of reads on splice junction",ylab="Average number of reads on canonical splice junctions",main='Canonical splice junction')
+
+plot(alt[,1:2],ylim=c(0,20),xlim=c(0,20),col=c("green","red")[alt$V4],xlab="Number of reads on splice junction",ylab="Average number of reads on canonical splice junctions",main='Alternative splice junction')
+legend(0,20,c("Classified by model as positive","Classified by model as negative"),col=c("green","red"),pch='O')

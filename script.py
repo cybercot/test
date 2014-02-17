@@ -17,7 +17,7 @@ for row in file:
 train = np.array(train, dtype=float)
 test = np.array(test, dtype=float)
 
-#Performing scale normalization (for each value subtract mean ans then divide by SD)
+#Performing scale normalization (for each value subtract mean and then divide by SD)
 test_scale = preprocessing.scale(test)
 train_scale = preprocessing.scale(train)
 
@@ -33,13 +33,23 @@ X_train, X_test = cross_validation.train_test_split(train_filter, test_size=0.3,
 
 #Fiting the best parameters
 error_train = {} 
-for kernel_type in ["linear", "poly", "rbf", "sigmoid"]:
-    clf = svm.OneClassSVM(kernel=kernel_type,nu=0.01)
-    clf.fit(X_train)
-    prd = clf.predict(X_test)
-    error = prd[prd == -1].size/float(prd.size)*100
-    error_train[kernel_type]=error
-print (error_train)
+for kernel_type in ["linear", "poly", "rbf","sigmoid"]:
+    if kernel_type!="linear":
+        for deg in [1,2,3,4,5]:
+            for g in [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]:
+                clf = svm.OneClassSVM(kernel=kernel_type,nu=0.01)
+                clf.fit(X_train)
+                prd = clf.predict(X_test)
+                error = prd[prd == -1].size/float(prd.size)*100
+                error_train[kernel_type+"-degree="+str(deg)+"-gamma="+str(g)]=error 
+                print(kernel_type+" degree = "+str(deg)+" gamma = "+str(g)+"	"+str(error))
+    else:
+        clf = svm.OneClassSVM(kernel=kernel_type,nu=0.01)
+        clf.fit(X_train)
+        prd = clf.predict(X_test)
+        error = prd[prd == -1].size/float(prd.size)*100
+        error_train[kernel_type]=error
+        print(kernel_type+"	"+str(error))
 
 #Choosing best parameters
 best_kernel=''
@@ -48,7 +58,7 @@ for name in error_train:
     if error_train[name]<best_value:
         best_kernel=name
         best_value=error_train[name]
-print (best_kernel, best_value)
+print ("The best kernel is '"+best_kernel+"' with cross validation error - "+str(best_value))
 
 #Fiting classifier with best parameters
 clf = svm.OneClassSVM(kernel = best_kernel, nu=0.01)
